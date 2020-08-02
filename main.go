@@ -27,10 +27,7 @@ func main() {
 		fmt.Println(error)
 	}
 
-	error = d.InitTable(db)
-	if error != nil {
-		fmt.Println(error)
-	}
+	d.InitTable(db)
 
 	for {
 		select {

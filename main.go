@@ -20,6 +20,7 @@ func main() {
 	tick := time.NewTicker(time.Second)
 	defer tick.Stop()
 	done := make(chan bool)
+	defer closeChan(done)
 
 	db, error := sql.Open("sqlite3", "./sqliteDb/ClipHist.db")
 	if error != nil {
@@ -37,15 +38,8 @@ func main() {
 			fmt.Println("Done!")
 			return
 		case <-tick.C:
-			clip, err := r.ReadClip()
-			if err != nil {
-				fmt.Println(err)
-			}
-			err = d.WriteHist(db, clip)
-			if err != nil {
-				fmt.Println(err)
-			}
-			fmt.Println(clip)
+			clip := r.ReadClip()
+			d.WriteHist(db, clip)
 		}
 	}
 

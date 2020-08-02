@@ -1,16 +1,19 @@
 package ReadClip
 
-import "os/exec"
+import (
+	"fmt"
+	"os/exec"
+)
 
 func getReadCmd() *exec.Cmd {
 	return exec.Command("pbpaste")
 }
 
-func ReadClip() (string, error) {
+func ReadClip() string {
 	pasteCmd := getReadCmd()
 	res, err := pasteCmd.Output()
 	if err != nil {
-		return "", err
+		fmt.Println(err)
 	}
-	return string(res), nil
+	return string(res)
 }

@@ -10,8 +10,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var lastCopy string
-
 func closeChan(c chan bool) {
 	c <- true
 }

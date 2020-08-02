@@ -7,6 +7,7 @@ import (
 
 var lastContent string
 
+// Writes the most recent content of clipboard to the db, ignores if the content hasn't changed
 func WriteHist(d *sql.DB, s string) {
 	if lastContent == s {
 		return
@@ -20,6 +21,7 @@ func WriteHist(d *sql.DB, s string) {
 
 }
 
+// Inits the table to store paste info in db
 func InitTable(d *sql.DB) {
 	statement, e := d.Prepare("CREATE TABLE IF NOT EXISTS clip(content string unique, timestamp datetime default current_timestamp)")
 	if e != nil {

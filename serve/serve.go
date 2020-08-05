@@ -17,7 +17,7 @@ func main() {
 	db, _ = sql.Open("sqlite3", "../sqliteDb/ClipHist.db")
 
 	http.Handle("/", http.FileServer(http.Dir("../ClipHistyFE/public")))
-	http.HandleFunc("/hello", HelloServer)
+	http.HandleFunc("/content", HelloServer)
 
 	log.Fatal(http.ListenAndServe(":3000", nil))
 }

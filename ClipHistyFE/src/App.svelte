@@ -1,6 +1,6 @@
 <script>
-  const fetchImage = (async () => {
-    const response = await fetch("http://localhost:3000/hello");
+  const fetchData = (async () => {
+    const response = await fetch("/content");
     return await response.json();
   })();
 </script>
@@ -13,10 +13,7 @@
     border-collapse: separate;
     border-spacing: 15px 20px;
   }
-  tr > th {
-    font-size: 2em;
-  }
-  tr > td {
+  td {
     padding-top: 1em;
     padding-bottom: 1em;
     padding-left: 1em;
@@ -27,6 +24,7 @@
   }
 
   th {
+    font-size: 2em;
     text-align: left;
   }
 
@@ -54,7 +52,7 @@
       </tr>
     </thead>
     <tbody>
-      {#await fetchImage}
+      {#await fetchData}
         <p>...waiting</p>
       {:then data}
         {#each data as d}

@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "file": "bundle.css",
+  "sources": [
+    "../../App.svelte"
+  ],
+  "sourcesContent": [
+    "<script>\n  let sampleEntry = { entry: \"some history stuff\", date: \"08/11/1990\" };\n  let entryA = [\n    { entry: \"some history stuff\", date: \"08/11/1990\" },\n    { entry: \"some other history stuff\", date: \"10/11/1995\" },\n    sampleEntry,\n    sampleEntry,\n    sampleEntry,\n    sampleEntry,\n    sampleEntry,\n    sampleEntry,\n    sampleEntry\n  ];\n</script>\n\n<style>\n  table {\n    margin-left: 10%;\n    size: 50px;\n    width: 60%;\n    border-collapse: separate;\n    border-spacing: 15px 20px;\n  }\n  tr > th {\n    font-size: 2em;\n  }\n  tr > td {\n    padding-top: 1em;\n    padding-bottom: 1em;\n    padding-left: 1em;\n    border-radius: 3px;\n    box-shadow: rgba(15, 15, 15, 0.2) 0px 0px 0px 1px,\n      rgba(15, 15, 15, 0.2) 0px 2px 4px;\n    background-color: rgb(63, 68, 71);\n  }\n\n  th {\n    text-align: left;\n  }\n\n  div {\n    height: 100%;\n    width: 100%;\n    justify-content: center;\n    align-items: center;\n    color: rgba(255, 255, 255, 0.9);\n    font: BlinkMacSystemFont;\n    background-color: #2f3437;\n  }\n\n  .date {\n    width: 15%;\n  }\n</style>\n\n<div>\n  <table>\n    <thead>\n      <tr>\n        <th class=\"date\">date</th>\n        <th>entry</th>\n      </tr>\n    </thead>\n    <tbody>\n      {#each entryA as entry}\n        <tr>\n          <td class=\"date\">{entry.date}</td>\n          <td>{entry.entry}</td>\n        </tr>\n      {/each}\n    </tbody>\n  </table>\n</div>\n"
+  ],
+  "names": [],
+  "mappings": "AAgBE,KAAK,8BAAC,CAAC,AACL,WAAW,CAAE,GAAG,CAChB,IAAI,CAAE,IAAI,CACV,KAAK,CAAE,GAAG,CACV,eAAe,CAAE,QAAQ,CACzB,cAAc,CAAE,IAAI,CAAC,IAAI,AAC3B,CAAC,AACD,iBAAE,CAAG,EAAE,eAAC,CAAC,AACP,SAAS,CAAE,GAAG,AAChB,CAAC,AACD,iBAAE,CAAG,EAAE,eAAC,CAAC,AACP,WAAW,CAAE,GAAG,CAChB,cAAc,CAAE,GAAG,CACnB,YAAY,CAAE,GAAG,CACjB,aAAa,CAAE,GAAG,CAClB,UAAU,CAAE,KAAK,EAAE,CAAC,CAAC,EAAE,CAAC,CAAC,EAAE,CAAC,CAAC,GAAG,CAAC,CAAC,GAAG,CAAC,GAAG,CAAC,GAAG,CAAC,GAAG,CAAC;MAChD,KAAK,EAAE,CAAC,CAAC,EAAE,CAAC,CAAC,EAAE,CAAC,CAAC,GAAG,CAAC,CAAC,GAAG,CAAC,GAAG,CAAC,GAAG,CACnC,gBAAgB,CAAE,IAAI,EAAE,CAAC,CAAC,EAAE,CAAC,CAAC,EAAE,CAAC,AACnC,CAAC,AAED,EAAE,8BAAC,CAAC,AACF,UAAU,CAAE,IAAI,AAClB,CAAC,AAED,GAAG,8BAAC,CAAC,AACH,MAAM,CAAE,IAAI,CACZ,KAAK,CAAE,IAAI,CACX,eAAe,CAAE,MAAM,CACvB,WAAW,CAAE,MAAM,CACnB,KAAK,CAAE,KAAK,GAAG,CAAC,CAAC,GAAG,CAAC,CAAC,GAAG,CAAC,CAAC,GAAG,CAAC,CAC/B,IAAI,CAAE,kBAAkB,CACxB,gBAAgB,CAAE,OAAO,AAC3B,CAAC,AAED,KAAK,8BAAC,CAAC,AACL,KAAK,CAAE,GAAG,AACZ,CAAC"
+}

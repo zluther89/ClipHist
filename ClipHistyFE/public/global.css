@@ -6,6 +6,11 @@ body {
   background-color: #2f3437;
 }
 
+div {
+  background-color: #2f3437;
+  color: rgba(255, 255, 255, 0.9);
+}
+
 body {
   margin: 0;
   padding: 8px;

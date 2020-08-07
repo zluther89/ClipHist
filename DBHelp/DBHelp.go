@@ -55,3 +55,17 @@ func SelectTopFromDB(d *sql.DB) []ClipRow {
 	}
 	return s
 }
+
+func FindClip(s string, d *sql.DB) (string, error) {
+	qStr := fmt.Sprintf("SELECT content FROM clip WHERE timestampe = %v", s)
+	row, e := d.Query(qStr)
+	defer row.Close()
+	if e != nil {
+		return "", e
+	}
+	content := ""
+	if e := row.Scan(&content); e != nil {
+		return "", e
+	}
+	return content, nil
+}

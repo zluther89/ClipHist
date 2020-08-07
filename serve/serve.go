@@ -2,6 +2,7 @@ package main
 
 import (
 	d "ClipHist/DBHelp"
+	ReadClip "ClipHist/ReadClip"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -11,7 +12,12 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type reqBody struct {
+	Content, Timestamp string
+}
+
 var db *sql.DB
+
 var port string = ":3000"
 
 func main() {
@@ -30,7 +36,17 @@ func contentRouter(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		getContentAndWrite(w)
 	case "POST":
-		fmt.Println("post")
+		if e := r.ParseForm(); e != nil {
+			fmt.Printf("ParseForm() err: %v", e)
+			return
+		}
+		dec := json.NewDecoder(r.Body)
+		var rB reqBody
+		if e := dec.Decode(&rB); e != nil {
+			fmt.Println(e)
+		}
+		ReadClip.WriteToClip(rB.Content)
+		fmt.Printf("Post From Website %v", rB.Content)
 	}
 }
 

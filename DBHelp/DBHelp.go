@@ -37,7 +37,7 @@ type ClipRow struct {
 
 // Reads most recent 25
 func SelectTopFromDB(d *sql.DB) []ClipRow {
-	rows, e := d.Query("SELECT * FROM clip ORDER BY rowid LIMIT 25;")
+	rows, e := d.Query("SELECT * FROM clip ORDER BY rowid desc LIMIT 25;")
 	defer rows.Close()
 	if e != nil {
 		fmt.Println(e)

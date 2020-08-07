@@ -12,18 +12,29 @@ import (
 )
 
 var db *sql.DB
+var port string = ":3000"
 
 func main() {
 	db, _ = sql.Open("sqlite3", "../sqliteDb/ClipHist.db")
 
 	http.Handle("/", http.FileServer(http.Dir("../ClipHistyFE/public")))
-	http.HandleFunc("/content", HelloServer)
+	http.HandleFunc("/content", contentRouter)
 
-	log.Fatal(http.ListenAndServe(":3000", nil))
+	log.Print("Listening on port", port)
+	log.Fatal(http.ListenAndServe(port, nil))
 }
 
-func HelloServer(w http.ResponseWriter, r *http.Request) {
+func contentRouter(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
+	switch r.Method {
+	case "GET":
+		getContentAndWrite(w)
+	case "POST":
+		fmt.Println("post")
+	}
+}
+
+func getContentAndWrite(w http.ResponseWriter) {
 	t := d.SelectTopFromDB(db)
 	j, e := json.Marshal(t)
 	if e != nil {
@@ -31,6 +42,7 @@ func HelloServer(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write(j)
 }
+
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }

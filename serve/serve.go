@@ -34,20 +34,36 @@ func contentRouter(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
 	switch r.Method {
 	case "GET":
+		s := r.URL.Query().Get("search")
+		fmt.Println(s == "")
 		getContentAndWrite(w)
 	case "POST":
-		if e := r.ParseForm(); e != nil {
-			fmt.Printf("ParseForm() err: %v", e)
-			return
-		}
-		dec := json.NewDecoder(r.Body)
-		var rB reqBody
-		if e := dec.Decode(&rB); e != nil {
-			fmt.Println(e)
-		}
-		ReadClip.WriteToClip(rB.Content)
-		fmt.Printf("Post From Website %v", rB.Content)
+		handleContentPost(w, r)
 	}
+}
+
+func handleContentPost(w http.ResponseWriter, r *http.Request) {
+	if e := r.ParseForm(); e != nil {
+		fmt.Printf("ParseForm() err: %v", e)
+		return
+	}
+	content := decodeJsonRContent(r)
+	if e := ReadClip.WriteToClip(content); e != nil {
+		w.WriteHeader(200)
+	} else {
+		w.WriteHeader(400)
+	}
+}
+
+func decodeJsonRContent(r *http.Request) string {
+	dec := json.NewDecoder(r.Body)
+	var rB reqBody
+	if e := dec.Decode(&rB); e != nil {
+		fmt.Println(e)
+		return ""
+	}
+	return rB.Content
+
 }
 
 func getContentAndWrite(w http.ResponseWriter) {

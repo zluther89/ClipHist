@@ -4,8 +4,7 @@
     return await response.json();
   })();
 
-  const handleClick = function(postInfo) {
-    console.log(postInfo);
+  const handleClick = function(event, postInfo) {
     try {
       fetch("/content", { method: "POST", body: JSON.stringify(postInfo) });
     } catch (e) {
@@ -42,7 +41,11 @@
     align-items: center;
   }
   td:hover {
-    background-color: rgb(78, 85, 88);
+    background-color: #4e5558;
+  }
+  td:active {
+    background-color: blue;
+    /* background: linear-gradient(to middle, #4e5558 5%, #2f3437 100%); */
   }
   .date {
     width: 15%;
@@ -62,9 +65,11 @@
         <p>...waiting</p>
       {:then data}
         {#each data as d}
-          <tr on:click={() => handleClick(d)}>
+          <tr>
             <td class="date">{d.Timestamp}</td>
-            <td>{d.Content}</td>
+            <td id={d.Timestamp} on:click={e => handleClick(e, d)}>
+              {d.Content}
+            </td>
           </tr>
         {/each}
       {:catch error}

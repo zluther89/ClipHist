@@ -3,6 +3,7 @@ package DBHelp
 import (
 	"database/sql"
 	"fmt"
+	"time"
 )
 
 var lastContent string
@@ -51,6 +52,7 @@ func SelectTopFromDB(d *sql.DB) []ClipRow {
 			fmt.Println(err)
 		}
 		cR := ClipRow{content, timestamp}
+		cR.Timestamp = formatDBTime(cR.Timestamp)
 		s = append(s, cR)
 	}
 	return s
@@ -68,4 +70,12 @@ func FindClip(s string, d *sql.DB) (string, error) {
 		return "", e
 	}
 	return content, nil
+}
+
+func formatDBTime(s string) string {
+	t, e := time.Parse(time.RFC3339, s)
+	if e != nil {
+		fmt.Println(e)
+	}
+	return t.Format("Mon Jan 2 15:04:05 2006")
 }

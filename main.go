@@ -1,8 +1,8 @@
 package main
 
 import (
-	d "ClipHist/DBHelp"
-	r "ClipHist/ReadClip"
+	"ClipHist/Clip"
+	"ClipHist/DBHelp"
 	"database/sql"
 	"fmt"
 	"time"
@@ -10,22 +10,27 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func closeChan(c chan bool) {
-	c <- true
+type Done chan bool
+
+func (d Done) Stop() {
+	d <- true
 }
+
+var lastClip string
 
 func main() {
 	tick := time.NewTicker(time.Second)
 	defer tick.Stop()
-	done := make(chan bool)
-	defer closeChan(done)
+
+	done := Done(make(chan bool))
+	defer done.Stop()
 
 	db, error := sql.Open("sqlite3", "./sqliteDb/ClipHist.db")
 	if error != nil {
 		fmt.Println(error)
 	}
 
-	d.InitTable(db)
+	DBHelp.InitTable(db)
 
 	for {
 		select {
@@ -33,8 +38,10 @@ func main() {
 			fmt.Println("Done!")
 			return
 		case <-tick.C:
-			clip := r.ReadClip()
-			d.WriteHist(db, clip)
+			if clip := Clip.ReadClip(); clip != lastClip && clip != "" {
+				lastClip = clip
+				DBHelp.WriteHist(db, clip)
+			}
 		}
 	}
 

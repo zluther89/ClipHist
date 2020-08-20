@@ -1,9 +1,13 @@
-package ReadClip
+package Clip
 
 import (
 	"fmt"
 	"os/exec"
 )
+
+type ClipEntry struct {
+	Content, Timestamp string
+}
 
 // returns command to paste info from clipboard
 func getReadCmd() *exec.Cmd {
@@ -25,8 +29,8 @@ func ReadClip() string {
 	return string(res)
 }
 
-//takes in a string, writes string to clipboard, returns err
-func WriteToClip(s string) error {
+//Saves ClipEntry to clipboard, returns err
+func (c *ClipEntry) Save() error {
 	writeCmd := getCopyCmd()
 	writer, err := writeCmd.StdinPipe()
 	if err != nil {
@@ -37,7 +41,7 @@ func WriteToClip(s string) error {
 		return err
 	}
 
-	if _, err := writer.Write([]byte(s)); err != nil {
+	if _, err := writer.Write([]byte(c.Content)); err != nil {
 		return err
 	}
 

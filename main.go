@@ -30,7 +30,9 @@ func main() {
 		fmt.Println(error)
 	}
 
-	DBHelp.InitTable(db)
+	if err := DBHelp.InitTable(db); err != nil {
+		fmt.Println(err)
+	}
 
 	for {
 		select {

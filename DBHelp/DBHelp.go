@@ -13,23 +13,25 @@ type ClipRow struct {
 }
 
 // Writes the most recent content of clipboard to the db, ignores if the content hasn't changed
-func WriteHist(d *sql.DB, s string) {
+func WriteHist(d *sql.DB, s string) (sql.Result, error) {
 	statement, e := d.Prepare("INSERT OR REPLACE INTO clip(content) VALUES(?)")
 	if e != nil {
 		fmt.Println(e)
-		return
+		return nil, e
 	}
-	statement.Exec(s)
+	return statement.Exec(s)
+
 }
 
 // Inits the table to store paste info in db
-func InitTable(d *sql.DB) {
-	statement, e := d.Prepare("CREATE TABLE IF NOT EXISTS clip(content string unique, timestamp datetime default current_timestamp)")
+func InitTable(d *sql.DB) error {
+	statement, e := d.Prepare(initDBSQL)
 	if e != nil {
 		fmt.Println(e)
-		return
+		return e
 	}
 	statement.Exec()
+	return nil
 }
 
 // Reads most recent 25

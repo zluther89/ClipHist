@@ -58,7 +58,7 @@ func decodeJsonRContent(r *http.Request) (Clip.ClipEntry, error) {
 
 func getContent(w http.ResponseWriter) error {
 	encoder := json.NewEncoder(w)
-	t, err := ClipDB.SelectTopFromDB()
+	t, err := ClipDB.SelectTop()
 	if err != nil {
 		return err
 	}

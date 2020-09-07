@@ -3,8 +3,8 @@ package main
 import (
 	"ClipHist/Clip"
 	"ClipHist/ClipDB"
+	"ClipHist/Notify"
 	"fmt"
-	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -18,28 +18,26 @@ func (d Done) Stop() {
 var lastClip string
 
 func main() {
-	tick := time.NewTicker(time.Second)
-	defer tick.Stop()
-
 	done := Done(make(chan bool))
-	defer done.Stop()
+	r := make(chan bool)
+	//defer done.Stop()
+
+	//Notify.Init()
 
 	err := ClipDB.Init("./sqliteDb/ClipHist.db")
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	for {
-		select {
-		case <-done:
-			fmt.Println("Done!")
-			return
-		case <-tick.C:
-			if clip := Clip.ReadClip(); clip != lastClip && clip != "" {
-				lastClip = clip
-				ClipDB.Write(clip)
-			}
-		}
-	}
+	go Clip.ChanStart(r)
+	go Notify.Recieve(r)
+
+	// for {
+	// 	select {
+	// 	case <-r:
+	// 		fmt.Println("testing chan")
+	// 	}
+	// }
+	<-done
 
 }

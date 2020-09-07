@@ -1,8 +1,10 @@
 package Clip
 
 import (
+	"ClipHist/ClipDB"
 	"fmt"
 	"os/exec"
+	"time"
 )
 
 type ClipEntry struct {
@@ -49,4 +51,21 @@ func (c *ClipEntry) Save() error {
 		return err
 	}
 	return writeCmd.Wait()
+}
+
+var lastClip string
+
+func ChanStart(notify chan<- bool) {
+	tick := time.NewTicker(time.Second)
+	defer tick.Stop()
+	for {
+		select {
+		case <-tick.C:
+			if clip := ReadClip(); clip != lastClip && clip != "" {
+				lastClip = clip
+				ClipDB.Write(clip)
+				notify <- true
+			}
+		}
+	}
 }

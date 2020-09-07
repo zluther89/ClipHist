@@ -1,4 +1,4 @@
-package DBHelp
+package ClipDB
 
 var initDBSQL string = `
 CREATE TABLE IF NOT EXISTS 
@@ -10,3 +10,9 @@ CREATE TRIGGER IF NOT EXISTS limiter AFTER INSERT ON clip
         and (select count(*) from clip )>100;
     END;
 `
+
+var insertSQL string = `INSERT OR REPLACE INTO clip(content) VALUES(?)`
+
+var selectTopSQL string = `SELECT * FROM clip ORDER BY rowid desc LIMIT 25;`
+
+var findSQL string = `SELECT content FROM clip WHERE timestamp = %v`

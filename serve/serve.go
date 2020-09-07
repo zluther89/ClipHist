@@ -1,26 +1,18 @@
 package main
 
 import (
-	Clip "ClipHist/Clip"
-	d "ClipHist/DBHelp"
-	"database/sql"
+	"ClipHist/Clip"
+	"ClipHist/ClipDB"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
-
-	_ "github.com/mattn/go-sqlite3"
 )
-
-var db *sql.DB
 
 var port string = ":3000"
 
 func main() {
-	var err error
-	db, err = sql.Open("sqlite3", "../sqliteDb/ClipHist.db")
-	if err != nil {
-		fmt.Println(err)
+	if err := ClipDB.Init("../sqliteDb/ClipHist.db"); err != nil {
+		log.Fatal(err)
 	}
 
 	http.Handle("/", http.FileServer(http.Dir("../ClipHistyFE/public")))
@@ -34,8 +26,10 @@ func ContentHandler(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
 	switch r.Method {
 	case "GET":
-		c := getContent(db)
-		w.Write(c)
+		if err := getContent(w); err != nil {
+			log.Fatal(err)
+		}
+
 	case "POST":
 		handleContentPost(w, r)
 	}
@@ -62,13 +56,18 @@ func decodeJsonRContent(r *http.Request) (Clip.ClipEntry, error) {
 	return rB, nil
 }
 
-func getContent(db *sql.DB) []byte {
-	t := d.SelectTopFromDB(db)
-	j, e := json.Marshal(t)
-	if e != nil {
-		fmt.Println(e)
+func getContent(w http.ResponseWriter) error {
+	encoder := json.NewEncoder(w)
+	t, err := ClipDB.SelectTopFromDB()
+	if err != nil {
+		return err
 	}
-	return j
+	err = encoder.Encode(t)
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	}
+	return nil
 }
 
 func enableCors(w *http.ResponseWriter) {

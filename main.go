@@ -2,8 +2,7 @@ package main
 
 import (
 	"ClipHist/Clip"
-	"ClipHist/DBHelp"
-	"database/sql"
+	"ClipHist/ClipDB"
 	"fmt"
 	"time"
 
@@ -25,12 +24,8 @@ func main() {
 	done := Done(make(chan bool))
 	defer done.Stop()
 
-	db, error := sql.Open("sqlite3", "./sqliteDb/ClipHist.db")
-	if error != nil {
-		fmt.Println(error)
-	}
-
-	if err := DBHelp.InitTable(db); err != nil {
+	err := ClipDB.Init("./sqliteDb/ClipHist.db")
+	if err != nil {
 		fmt.Println(err)
 	}
 
@@ -42,7 +37,7 @@ func main() {
 		case <-tick.C:
 			if clip := Clip.ReadClip(); clip != lastClip && clip != "" {
 				lastClip = clip
-				DBHelp.WriteHist(db, clip)
+				ClipDB.Write(clip)
 			}
 		}
 	}

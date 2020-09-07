@@ -1,9 +1,12 @@
-package DBHelp
+//A Package to init and interact with a SQLite DB for Clip Histy
+package ClipDB
 
 import (
 	"database/sql"
 	"fmt"
 	"time"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 // A struct representing an entry in the D
@@ -12,36 +15,44 @@ type ClipRow struct {
 	Content, Timestamp string
 }
 
+var db *sql.DB
+
+//Opens up a new CLipDB at the filepath string and inits
+func Init(path string) error {
+	var err error
+	db, err = sql.Open("sqlite3", path)
+	if err != nil {
+		fmt.Print(err)
+		return err
+	}
+	statement, e := db.Prepare(initDBSQL)
+	if e != nil {
+		fmt.Println(e)
+		return e
+	}
+
+	statement.Exec()
+	return nil
+}
+
 // Writes the most recent content of clipboard to the db, ignores if the content hasn't changed
-func WriteHist(d *sql.DB, s string) (sql.Result, error) {
-	statement, e := d.Prepare("INSERT OR REPLACE INTO clip(content) VALUES(?)")
+func Write(s string) (sql.Result, error) {
+	statement, e := db.Prepare(insertSQL) // old "INSERT OR REPLACE INTO clip(content) VALUES(?)"
 	if e != nil {
 		fmt.Println(e)
 		return nil, e
 	}
 	return statement.Exec(s)
-
-}
-
-// Inits the table to store paste info in db
-func InitTable(d *sql.DB) error {
-	statement, e := d.Prepare(initDBSQL)
-	if e != nil {
-		fmt.Println(e)
-		return e
-	}
-	statement.Exec()
-	return nil
 }
 
 // Reads most recent 25
-func SelectTopFromDB(d *sql.DB) []ClipRow {
+func SelectTop() ([]ClipRow, error) {
 	s := []ClipRow{}
-	rows, e := d.Query("SELECT * FROM clip ORDER BY rowid desc LIMIT 25;")
+	rows, err := db.Query(selectTopSQL) // old "SELECT * FROM clip ORDER BY rowid desc LIMIT 25;"
 	defer rows.Close()
-	if e != nil {
-		fmt.Println(e)
-		return s
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
 	}
 	for rows.Next() {
 		content, timestamp := "", ""
@@ -52,13 +63,13 @@ func SelectTopFromDB(d *sql.DB) []ClipRow {
 		cR.formatTime()
 		s = append(s, cR)
 	}
-	return s
+	return s, err
 }
 
 // Finds a clip in the db by timestamp
-func FindClip(s string, d *sql.DB) (string, error) {
-	qStr := fmt.Sprintf("SELECT content FROM clip WHERE timestamp = %v", s)
-	row, e := d.Query(qStr)
+func FindClip(s string) (string, error) {
+	qStr := fmt.Sprintf(findSQL, s)
+	row, e := db.Query(qStr)
 	defer row.Close()
 	if e != nil {
 		return "", e

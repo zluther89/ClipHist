@@ -55,6 +55,7 @@ func (c *ClipEntry) Save() error {
 
 var lastClip string
 
+// Taked in a notification channel, starts a channel to poll Clipboard for changes, write changes to db and notifies input channel
 func ChanStart(notify chan<- bool) {
 	tick := time.NewTicker(time.Second)
 	defer tick.Stop()

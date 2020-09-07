@@ -15,28 +15,28 @@ type ClipRow struct {
 	Content, Timestamp string
 }
 
-var db *sql.DB
+type DB struct{ *sql.DB }
 
 //Opens up a new CLipDB at the filepath string and inits
-func Init(path string) error {
+func Init(path string) (DB, error) {
 	var err error
-	db, err = sql.Open("sqlite3", path)
+	db, err := sql.Open("sqlite3", path)
 	if err != nil {
 		fmt.Print(err)
-		return err
+		return DB{nil}, err
 	}
-	statement, e := db.Prepare(initDBSQL)
-	if e != nil {
-		fmt.Println(e)
-		return e
+	statement, err := db.Prepare(initDBSQL)
+	if err != nil {
+		fmt.Println(err)
+		return DB{nil}, err
 	}
 
 	statement.Exec()
-	return nil
+	return DB{db}, nil
 }
 
 // Writes the most recent content of clipboard to the db, ignores if the content hasn't changed
-func Write(s string) (sql.Result, error) {
+func (db DB) Write(s string) (sql.Result, error) {
 	statement, e := db.Prepare(insertSQL) // old "INSERT OR REPLACE INTO clip(content) VALUES(?)"
 	if e != nil {
 		fmt.Println(e)
@@ -46,7 +46,7 @@ func Write(s string) (sql.Result, error) {
 }
 
 // Reads most recent 25
-func SelectTop() ([]ClipRow, error) {
+func (db DB) SelectTop() ([]ClipRow, error) {
 	s := []ClipRow{}
 	rows, err := db.Query(selectTopSQL) // old "SELECT * FROM clip ORDER BY rowid desc LIMIT 25;"
 	defer rows.Close()
@@ -67,7 +67,7 @@ func SelectTop() ([]ClipRow, error) {
 }
 
 // Finds a clip in the db by timestamp
-func FindClip(s string) (string, error) {
+func (db DB) FindClip(s string) (string, error) {
 	qStr := fmt.Sprintf(findSQL, s)
 	row, e := db.Query(qStr)
 	defer row.Close()

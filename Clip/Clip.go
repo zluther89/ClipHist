@@ -55,18 +55,15 @@ func (c *ClipEntry) Save() error {
 
 var lastClip string
 
-// Taked in a notification channel, starts a channel to poll Clipboard for changes, write changes to db and notifies input channel
-func ChanStart(notify chan<- bool) {
+// Taked in a notification channel, starts a channel to poll Clipboard for changes, write changes to db and notifies alert channel
+func ChanStart(notify chan<- bool, db ClipDB.DB) {
 	tick := time.NewTicker(time.Second)
 	defer tick.Stop()
-	for {
-		select {
-		case <-tick.C:
-			if clip := ReadClip(); clip != lastClip && clip != "" {
-				lastClip = clip
-				ClipDB.Write(clip)
-				notify <- true
-			}
+	for _ = range tick.C {
+		if clip := ReadClip(); clip != lastClip && clip != "" {
+			lastClip = clip
+			db.Write(clip)
+			notify <- true
 		}
 	}
 }

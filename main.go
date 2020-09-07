@@ -13,14 +13,15 @@ var lastClip string
 
 func main() {
 	done := make(chan bool)
-	//channel torecieve notifications
+	//channel to recieve notifications
 	r := make(chan bool)
 
-	if err := ClipDB.Init("./sqliteDb/ClipHist.db"); err != nil {
+	db, err := ClipDB.Init("./sqliteDb/ClipHist.db")
+	if err != nil {
 		fmt.Println(err)
 	}
 
-	go Clip.ChanStart(r)
+	go Clip.ChanStart(r, db)
 
 	go Notify.Recieve(r)
 

@@ -22,11 +22,11 @@ func main() {
 	h := Handlers.Handler{DB: db}
 
 	go Clip.ChanStart(notify, db)
-	go h.Listen(notify)
+	//go h.Listen(notify)
 
 	http.Handle("/", http.FileServer(http.Dir("../ClipHistyFE/public")))
 	http.HandleFunc("/content", h.ContentHandler)
-	http.Handle("/socket", websocket.Handler(h.Socket))
+	http.Handle("/socket", websocket.Handler(Handlers.Wrapper(notify)))
 
 	log.Print("Listening on port", port)
 	log.Fatal(http.ListenAndServe(port, nil))

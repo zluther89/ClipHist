@@ -14,6 +14,7 @@
 
   var ws = new WebSocket("ws://" + window.location.host + "/socket");
   ws.onopen = function() {
+    console.log("connected");
     ws.send(JSON.stringify({ message: "hello server!" }));
   };
   ws.onmessage = function(event) {

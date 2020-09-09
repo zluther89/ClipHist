@@ -76,7 +76,29 @@ func (h *Handler) Listen(c <-chan bool) {
 	}
 }
 
-func (h *Handler) Socket(ws *websocket.Conn) {
+func Wrapper(ch chan bool) func(ws *websocket.Conn) {
+	return func(ws *websocket.Conn) {
+		var m message
+		// receive a message using the codec
+		if err := websocket.JSON.Receive(ws, &m); err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println("Received message:", m.Message)
+		for _ = range ch {
+			m3 := message{"A CHANGEE"}
+			fmt.Println("here")
+			if err := websocket.JSON.Send(ws, m3); err != nil {
+				log.Println(err)
+				break
+			}
+
+		}
+	}
+}
+
+/*
+func Socket(ws *websocket.Conn) {
 	for {
 		// allocate our container struct
 		var m message
@@ -101,5 +123,6 @@ func (h *Handler) Socket(ws *websocket.Conn) {
 		}
 	}
 }
+*/
 
 //func handleNotify (alert chan,socket){ send warning on a socket when alert chan is notified}

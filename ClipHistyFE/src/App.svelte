@@ -1,8 +1,15 @@
 <script>
-  const fetchData = (async () => {
-    const response = await fetch("/content");
-    return await response.json();
-  })();
+  import { onMount } from "svelte";
+  import SocketInit from "./SocketCnstr.js";
+
+  let content = [];
+
+  const fetchData = async () => {
+    const res = await fetch("/content");
+    content = await res.json();
+  };
+
+  var ws = SocketInit("ws://" + window.location.host + "/socket", fetchData);
 
   const handleClick = function(event, postInfo) {
     try {
@@ -12,18 +19,7 @@
     }
   };
 
-  var ws = new WebSocket("ws://" + window.location.host + "/socket");
-  ws.onopen = function() {
-    console.log("connected");
-    ws.send(JSON.stringify({ message: "hello server!" }));
-  };
-  ws.onmessage = function(event) {
-    var m = JSON.parse(event.data);
-    console.log("Received message", m.message);
-  };
-  ws.onerror = function(event) {
-    console.log(event);
-  };
+  onMount(fetchData);
 </script>
 
 <style>
@@ -74,21 +70,16 @@
       </tr>
     </thead>
     <tbody>
-      {#await fetchData}
-        <p>...waiting</p>
-      {:then data}
-        {#each data as d}
-          <tr>
-            <td class="date">{d.Timestamp}</td>
-            <td id={d.Timestamp} on:click={e => handleClick(e, d)}>
-              {d.Content}
-            </td>
-          </tr>
-        {/each}
-      {:catch error}
-        {console.log(error)}
-        <p>An error occurred!</p>
-      {/await}
+      {#each content as d}
+        <tr>
+          <td class="date">{d.Timestamp}</td>
+          <td id={d.Timestamp} on:click={e => handleClick(e, d)}>
+            {d.Content}
+          </td>
+        </tr>
+      {:else}
+        <p>loading...</p>
+      {/each}
 
     </tbody>
   </table>

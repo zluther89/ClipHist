@@ -11,6 +11,18 @@
       console.log(e);
     }
   };
+
+  var ws = new WebSocket("ws://" + window.location.host + "/socket");
+  ws.onopen = function() {
+    ws.send(JSON.stringify({ message: "hello server!" }));
+  };
+  ws.onmessage = function(event) {
+    var m = JSON.parse(event.data);
+    console.log("Received message", m.message);
+  };
+  ws.onerror = function(event) {
+    console.log(event);
+  };
 </script>
 
 <style>

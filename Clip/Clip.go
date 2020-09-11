@@ -8,6 +8,8 @@ import (
 	"log"
 	"os/exec"
 	"time"
+
+	"golang.org/x/net/websocket"
 )
 
 type ClipEntry struct {
@@ -70,9 +72,17 @@ func (c *ClipEntry) Save() error {
 
 var lastClip string = ""
 
+type message struct {
+	Message string `json:"message"`
+}
+
+var notifyTest chan bool
+
 // Takes in a notification channel, starts a channel to poll Clipboard for changes, write changes to db and notifies alert channel
-func ChanStart(notify chan<- bool, db ClipDB.DB) {
+func ChanStart(db ClipDB.DB, ws *websocket.Conn, m string) {
+	notifyTest := make(chan bool)
 	tick := time.NewTicker(time.Second)
+	mes := message{Message: m}
 	defer tick.Stop()
 	for _ = range tick.C {
 		clip, err := ReadClip()
@@ -83,7 +93,16 @@ func ChanStart(notify chan<- bool, db ClipDB.DB) {
 		if clip != lastClip && clip != "" {
 			lastClip = clip
 			db.Write(clip)
-			notify <- true
+			//write to the notification, unless its full
+			select {
+			case notifyTest <- true:
+			default:
+				fmt.Println("Channel is full")
+			}
+			if err := websocket.JSON.Send(ws, mes); err != nil {
+				log.Println(err)
+				break
+			}
 		}
 	}
 	return

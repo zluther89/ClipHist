@@ -4,11 +4,8 @@ import (
 	"ClipHist/Clip"
 	"ClipHist/ClipDB"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
-
-	"golang.org/x/net/websocket"
 )
 
 type Handler struct {
@@ -57,72 +54,3 @@ func (h *Handler) GetContent(w http.ResponseWriter) error {
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
-
-type message struct {
-	Message string `json:"message"`
-}
-
-// try to use listener to change a boolean on the handler struct
-// use the loop in the socket func to 'listen' for changes to the boolean and send messages to client
-func (h *Handler) Listen(c <-chan bool) {
-	for _ = range c {
-		fmt.Println("Test Recieve func")
-		fmt.Print(h.change)
-		if h.change == true {
-			h.change = false
-		} else {
-			h.change = true
-		}
-	}
-}
-
-func Wrapper(ch chan bool) func(ws *websocket.Conn) {
-	return func(ws *websocket.Conn) {
-		var m message
-		// receive a message using the codec
-		if err := websocket.JSON.Receive(ws, &m); err != nil {
-			log.Println(err)
-			return
-		}
-		log.Println("Received message:", m.Message)
-		for _ = range ch {
-			m3 := message{"A CHANGEE"}
-			fmt.Println("here")
-			if err := websocket.JSON.Send(ws, m3); err != nil {
-				log.Println(err)
-				break
-			}
-
-		}
-	}
-}
-
-/*
-func Socket(ws *websocket.Conn) {
-	for {
-		// allocate our container struct
-		var m message
-		// receive a message using the codec
-		if err := websocket.JSON.Receive(ws, &m); err != nil {
-			log.Println(err)
-			break
-		}
-		log.Println("Received message:", m.Message)
-		// send a response
-		m2 := message{"Thanks for the message!"}
-		if err := websocket.JSON.Send(ws, m2); err != nil {
-			log.Println(err)
-			break
-		}
-		m3 := message{"A CHANGEE"}
-		if h.change == true {
-			if err := websocket.JSON.Send(ws, m3); err != nil {
-				log.Println(err)
-				break
-			}
-		}
-	}
-}
-*/
-
-//func handleNotify (alert chan,socket){ send warning on a socket when alert chan is notified}

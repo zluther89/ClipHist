@@ -12,5 +12,9 @@ module.exports = function SocketInit(connString, cb) {
   ws.onerror = function (event) {
     console.log(event);
   };
+
+  ws.onclose = function () {
+    ws.send(JSON.stringify({ message: "Closed!" }));
+  };
   return ws;
 };

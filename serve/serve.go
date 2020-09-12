@@ -24,7 +24,9 @@ func main() {
 		fmt.Println(err)
 	}
 	h := Handlers.Handler{DB: db}
-
+	c := Clip.Init()
+	lastClip := ""
+	go c.Start(db, &lastClip)
 	//go h.Listen(notify)
 	connCount := 0
 
@@ -40,7 +42,7 @@ func main() {
 		var m message
 
 		for {
-			go Clip.ChanStart(db, ws, "A CHANGE")
+			go c.Listen(ws, "a change to db")
 			// receive a message using the codec
 			if err := websocket.JSON.Receive(ws, &m); err != nil {
 				log.Println("websocket recieve:", err)

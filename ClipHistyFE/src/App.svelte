@@ -9,11 +9,14 @@
     content = await res.json();
   };
 
-  var ws = SocketInit("ws://" + window.location.host + "/socket", fetchData);
+  let ws = SocketInit("ws://" + window.location.host + "/socket", fetchData);
 
-  const handleClick = function(event, postInfo) {
+  const handleClick = async function(event, postInfo) {
     try {
-      fetch("/content", { method: "POST", body: JSON.stringify(postInfo) });
+      await fetch("/content", {
+        method: "POST",
+        body: JSON.stringify(postInfo)
+      });
     } catch (e) {
       console.log(e);
     }

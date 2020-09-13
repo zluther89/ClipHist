@@ -25,20 +25,22 @@ func main() {
 	}
 	h := Handlers.Handler{DB: db}
 	c := Clip.Init()
-	lastClip := ""
-	go c.Start(db, &lastClip)
+
+	go c.Start(db)
 	//go h.Listen(notify)
-	connCount := 0
+	// connCount := 0
 
 	http.Handle("/", http.FileServer(http.Dir("../ClipHistyFE/public")))
 	http.HandleFunc("/content", h.ContentHandler)
 	http.Handle("/socket", websocket.Handler(func(ws *websocket.Conn) {
-		if connCount >= 1 {
-			ws.Close()
-			return
-		}
+		// fmt.Println("connection count", connCount)
+		// if connCount >= 1 {
+		// 	ws.Close()
+		// 	fmt.Print("hereeee")
+		// 	return
+		// }
 
-		connCount += 1
+		// connCount += 1
 		var m message
 
 		for {
@@ -46,7 +48,9 @@ func main() {
 			// receive a message using the codec
 			if err := websocket.JSON.Receive(ws, &m); err != nil {
 				log.Println("websocket recieve:", err)
-				connCount -= 1
+				// connCount -= 1
+				c.CloseListen()
+				ws.Close()
 				return
 			}
 			log.Println("Received message:", m.Message)

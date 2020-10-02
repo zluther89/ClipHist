@@ -1,31 +1,32 @@
 package main
 
 import (
-	"ClipHist/Clip"
-	"ClipHist/ClipDB"
-	"ClipHist/Notify"
+	"ClipHist/Handlers"
+	"ClipHist/clipboard"
+	"ClipHist/db"
 	"fmt"
-
-	_ "github.com/mattn/go-sqlite3"
+	"log"
+	"net/http"
+	"time"
 )
 
-var lastClip string
+var port string = ":3000"
+
+type message struct {
+	Message string `json:"message"`
+}
 
 func main() {
-	done := make(chan bool)
-	//channel to recieve notifications
-	alert := make(chan bool)
-
-	db, err := ClipDB.Init("./sqliteDb/ClipHist.db")
+	db, err := db.Init("../sqliteDb/ClipHist.db")
 	if err != nil {
 		fmt.Println(err)
 	}
+	h := Handlers.Handler{DB: db}
+	c := clipboard.Init(time.Second)
 
-	go Clip.ChanStart(alert, db)
-
-	go Notify.Recieve(alert)
-
-	//keep main alive
-	<-done
-
+	go c.StartListener(db)
+	http.Handle("/", http.FileServer(http.Dir("../View/public")))
+	http.HandleFunc("/content", h.ContentHandler)
+	log.Print("Listening on port", port)
+	log.Fatal(http.ListenAndServe(port, nil))
 }

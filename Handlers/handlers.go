@@ -1,16 +1,15 @@
 package Handlers
 
 import (
-	"ClipHist/Clip"
-	"ClipHist/ClipDB"
+	"ClipHist/clipboard"
+	"ClipHist/db"
 	"encoding/json"
 	"log"
 	"net/http"
 )
 
 type Handler struct {
-	DB     ClipDB.DB
-	change bool
+	DB db.DB
 }
 
 func (h *Handler) ContentHandler(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +26,7 @@ func (h *Handler) ContentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) HandleContentPost(w http.ResponseWriter, r *http.Request) {
-	c, e := Clip.DecodeClip(r.Body)
+	c, e := clipboard.Decode(r.Body)
 	if e != nil {
 		log.Printf("Post error: %v:", e)
 		w.WriteHeader(400)

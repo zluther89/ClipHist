@@ -1,6 +1,5 @@
 <script>
   import { onMount } from "svelte";
-  import SocketInit from "./SocketCnstr.js";
 
   let content = [];
 
@@ -8,8 +7,6 @@
     const res = await fetch("/content");
     content = await res.json();
   };
-
-  let ws = SocketInit("ws://" + window.location.host + "/socket", fetchData);
 
   const handleClick = async function(event, postInfo) {
     try {
@@ -22,7 +19,9 @@
     }
   };
 
-  onMount(fetchData);
+  onMount(() => {
+    setInterval(fetchData, 500);
+  });
 </script>
 
 <style>

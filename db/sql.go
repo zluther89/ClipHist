@@ -1,4 +1,4 @@
-package ClipDB
+package db
 
 var initDBSQL string = `
 CREATE TABLE IF NOT EXISTS 

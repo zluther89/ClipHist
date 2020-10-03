@@ -35,3 +35,5 @@ Clip Hist records the previous 100 items you have copied into your clipboard onl
 - Organizing entries by day
 - Support for searching through entries
 - Support for deleting old entries
+
+To contribute contact: zluther89@gmail.com

@@ -1,6 +1,4 @@
 <script>
-  import { onMount } from "svelte";
-
   let content = [];
 
   const fetchData = async () => {
@@ -18,10 +16,8 @@
       console.log(e);
     }
   };
-
-  onMount(() => {
-    setInterval(fetchData, 500);
-  });
+  fetchData();
+  setInterval(fetchData, 500);
 </script>
 
 <style>

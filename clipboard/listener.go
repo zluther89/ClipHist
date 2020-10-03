@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"strings"
 	"time"
 )
@@ -43,18 +44,18 @@ type Writer interface {
 }
 
 // Polls the cliboard for changes, writers changes to a writer and notifies notify chan
-func (c ClipChannels) StartListener(w Writer) error {
+func (c ClipChannels) StartListener(w Writer) {
 	for _ = range c.tick.C {
 		clip, err := ReadClip()
 		if err != nil {
-			return err
+			log.Fatal(err)
 		}
 		tc := strings.TrimSpace(clip)
 		if clip != c.last && tc != "" {
 			c.last = clip
 			_, err := w.Write(clip)
 			if err != nil {
-				return err
+				log.Fatal(err)
 			}
 			select {
 			case c.notify <- true:
@@ -64,6 +65,5 @@ func (c ClipChannels) StartListener(w Writer) error {
 
 		}
 	}
-	return nil
 
 }

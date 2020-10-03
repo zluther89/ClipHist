@@ -16,12 +16,11 @@ func (h *Handler) ContentHandler(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
 	switch r.Method {
 	case "GET":
-		if err := h.GetContent(w); err != nil {
-			log.Fatal(err)
-		}
-
+		h.GetContent(w)
 	case "POST":
 		h.HandleContentPost(w, r)
+	default:
+		w.WriteHeader(400)
 	}
 }
 
@@ -36,18 +35,16 @@ func (h *Handler) HandleContentPost(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 }
 
-func (h *Handler) GetContent(w http.ResponseWriter) error {
+func (h *Handler) GetContent(w http.ResponseWriter) {
 	encoder := json.NewEncoder(w)
 	t, err := h.DB.SelectTop()
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
 	err = encoder.Encode(t)
 	if err != nil {
 		log.Fatal(err)
-		return nil
 	}
-	return nil
 }
 
 func enableCors(w *http.ResponseWriter) {

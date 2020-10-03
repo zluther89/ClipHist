@@ -13,6 +13,6 @@ CREATE TRIGGER IF NOT EXISTS limiter AFTER INSERT ON clip
 
 var insertSQL string = `INSERT OR REPLACE INTO clip(content) VALUES(?)`
 
-var selectTopSQL string = `SELECT * FROM clip ORDER BY rowid desc LIMIT 25;`
+var selectTopSQL string = `SELECT * FROM clip ORDER BY rowid desc`
 
 var findSQL string = `SELECT content FROM clip WHERE timestamp = %v`

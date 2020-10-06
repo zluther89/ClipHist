@@ -17,7 +17,7 @@ type message struct {
 }
 
 func main() {
-	db, err := db.Init("./sqliteDb/ClipHist.db")
+	db, err := db.Init("./sqliteDb/ClipHistNew.db")
 	if err != nil {
 		fmt.Println(err)
 	}

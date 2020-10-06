@@ -25,7 +25,7 @@ func main() {
 	c := clipboard.Init(time.Second)
 
 	go c.StartListener(db)
-	http.Handle("/", http.FileServer(http.Dir("./View/public")))
+	http.Handle("/", http.FileServer(http.Dir("./frontend/public")))
 	http.HandleFunc("/content", h.ContentHandler)
 	log.Print("Listening on port", port)
 	log.Fatal(http.ListenAndServe(port, nil))

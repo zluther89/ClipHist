@@ -24,7 +24,8 @@
   table {
     margin-left: 10%;
     size: 50px;
-    width: 60%;
+    width: 80%;
+    /* table-layout: fixed; */
     border-collapse: separate;
     border-spacing: 15px 20px;
   }
@@ -33,9 +34,13 @@
     padding-bottom: 1em;
     padding-left: 1em;
     border-radius: 3px;
+    overflow-wrap: anywhere;
     box-shadow: rgba(15, 15, 15, 0.2) 0px 0px 0px 1px,
       rgba(15, 15, 15, 0.2) 0px 2px 4px;
     background-color: rgb(63, 68, 71);
+  }
+  .content {
+    padding-right: 5%;
   }
   th {
     font-size: 2em;
@@ -55,7 +60,7 @@
     /* background: linear-gradient(to middle, #4e5558 5%, #2f3437 100%); */
   }
   .date {
-    width: 15%;
+    width: 12%;
   }
 </style>
 
@@ -71,7 +76,10 @@
       {#each content as d}
         <tr>
           <td class="date">{d.Timestamp}</td>
-          <td id={d.Timestamp} on:click={e => handleClick(e, d)}>
+          <td
+            class="content"
+            id={d.Timestamp}
+            on:click={e => handleClick(e, d)}>
             {d.Content}
           </td>
         </tr>
